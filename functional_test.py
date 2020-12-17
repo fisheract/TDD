@@ -35,7 +35,8 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_element_by_tag_name('tr')
         self.assertTrue(
-            any(rows.text == '1: Buys some feather' for row in rows)
+            any(rows.text == '1: Buys some feather' for row in rows),
+            "New element didn't appear in table"
         )
         # testing field still asking to add another element
         # make pillow from feather
