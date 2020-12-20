@@ -21,23 +21,28 @@ class NewVisitorTest(unittest.TestCase):
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('To-Do', header_text)
 
-        #Insert list element
+        #Insert first element
         input_box = self.browser.find_element_by_id('id_new_item')
         self.assertEqual(input_box.get_attribute('placeholder'), 'Enter a to-do item')
-
         #Write in "Buy something
-        input_box.send_keys('Buys some feather')
-
+        input_box.send_keys('Buy some feather')
         #after pushing Enter page reload and have one to-do item "Buys ome feather"
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
+        # Insert second element
+        input_box = self.browser.find_element_by_id('id_new_item')
+        self.assertEqual(input_box.get_attribute('placeholder'), 'Enter a to-do item')
+        # Write in "Make pillow from feather"
+        input_box.send_keys('Make pillow from feather')
+        # after pushing Enter page reload and have one to-do item "Buys ome feather"
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(1)
+
 
         table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_element_by_tag_name('tr')
-        self.assertTrue(
-            any(rows.text == '1: Buys some feather' for row in rows),
-            "New element didn't appear in table"
-        )
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn('1. Buy some feather', [row.text for row in rows])
+        self.assertIn('2. Make pillow from feather', [row.text for row in rows])
         # testing field still asking to add another element
         # make pillow from feather
         self.fail('End test!')
