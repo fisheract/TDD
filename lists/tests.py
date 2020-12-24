@@ -1,27 +1,48 @@
-from .models import Item
 from django.test import TestCase
+from .models import Item
 
-# Create your tests here.
 
 class HomePageTest(TestCase):
-    '''test homepage'''
+    # test homepage
 
     def test_uses_home_template(self):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
     def test_can_save_a_POST_request(self):
-        '''test can save Post request'''
+        # test can save Post request
+        self.client.post('/', data={'item_text': 'A new list item'})
+
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'A new list item')
+
+    def test_redirect_after_POST(self):
         response = self.client.post('/', data={'item_text': 'A new list item'})
-        self.assertIn('A new list item', response.content.decode())
-        self.assertTemplateUsed(response, 'home.html')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
+
+    def test_only_saves_items_when_necessary(self):
+        # test: save elements only when it is needed
+        self.client.get('/')
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_displays_all_lists_items(self):
+        # show all elements of list
+        Item.objects.create(text='itemey 1')
+        Item.objects.create(text='itemey 2')
+
+        response = self.client.get('/')
+
+        self.assertIn('itemey 1', response.content.decode())
+        self.assertIn('itemey 2', response.content.decode())
 
 
 class ItemModelTest(TestCase):
-    #Model element test from list
+    # Model element test from list
 
     def test_saving_and_retrieveing_items(self):
-        #saving and getting list elements from list test
+        # saving and getting list elements from list test
         first_item = Item()
         first_item.text = 'The first (ever) list item'
         first_item.save()
