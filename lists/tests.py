@@ -1,6 +1,8 @@
+from .models import Item
 from django.test import TestCase
 
 # Create your tests here.
+
 class HomePageTest(TestCase):
     '''test homepage'''
 
@@ -14,3 +16,23 @@ class HomePageTest(TestCase):
         self.assertIn('A new list item', response.content.decode())
         self.assertTemplateUsed(response, 'home.html')
 
+
+class ItemModelTest(TestCase):
+    #Model element test from list
+
+    def test_saving_and_retrieveing_items(self):
+        #saving and getting list elements from list test
+        first_item = Item()
+        first_item.text = 'The first (ever) list item'
+        first_item.save()
+
+        second_item = Item()
+        second_item.text = 'Item the second'
+        second_item.save()
+
+        saved_items = Item.objects.all()
+        self.assertEqual(saved_items.count(), 2)
+        first_saved_tem = saved_items[0]
+        second_saved_item = saved_items[1]
+        self.assertEqual(first_saved_tem.text, 'The first (ever) list item')
+        self.assertEqual(second_saved_item.text, 'Item the second')
